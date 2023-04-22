@@ -10,7 +10,7 @@ let
   };
   node_bin = pkgs.runCommand "node_bin" { } ''
     mkdir -p $out/bin
-    cp -s ${node_modules}/bin/{tsc,ts-node,vite} $out/bin
+    cp -s ${node_modules}/bin/{tsc,ts-node,ts-node-dev,vite} $out/bin
   '';
   cobi-nix = import inputs.cobi-nix { inherit (inputs) nixpkgs; };
 in
@@ -23,13 +23,13 @@ in
 
   enterShell = ''
     mkdir -p node_modules
-    rm -f node_modules/*
-    ln -s ${node_modules}/node_modules/* node_modules
+    rm -f node_modules/{.bin,*}
+    ln -s ${node_modules}/node_modules/{.bin,*} node_modules
   '';
 
   processes = mapAttrs (_: exec: { inherit exec; }) {
     frontend = "vite --port 4000 frontend";
-    backend = "ts-node backend/server.ts";
+    backend = "ts-node-dev backend/server.ts";
     caddy = "caddy run";
   };
 
