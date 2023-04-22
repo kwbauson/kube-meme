@@ -1,0 +1,15 @@
+inputs:
+  nixpkgs:
+    url: github:NixOS/nixpkgs/nixpkgs-unstable
+  cobi-nix:
+    url: github:jpetrucciani/nix
+  npmlock2nix:
+    url: github:nix-community/npmlock2nix
+    flake: false
+  nix2container:
+    url: github:nlewo/nix2container
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
+  mk-shell-bin:
+    url: github:rrbutani/nix-mk-shell-bin
