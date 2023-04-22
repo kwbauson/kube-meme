@@ -27,8 +27,9 @@ in
     ln -s ${node_modules}/node_modules/{.bin,*} node_modules
   '';
 
+  process.implementation = "overmind";
   processes = mapAttrs (_: exec: { inherit exec; }) {
-    frontend = "vite --port 4000 frontend";
+    frontend = "vite --clearScreen false --port 4000 frontend";
     backend = "ts-node-dev backend/server.ts";
     caddy = "caddy run";
   };
