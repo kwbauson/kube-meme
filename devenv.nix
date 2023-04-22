@@ -8,20 +8,28 @@ let
     inherit nodejs;
     src = filterSource (p: _: elem (baseNameOf p) [ "package.json" "package-lock.json" ]) src;
   };
-  node_modules_bins = pkgs.runCommand "node_modules_bins" { } ''
+  node_bin = pkgs.runCommand "node_bin" { } ''
     mkdir -p $out/bin
-    cp -s ${node_modules}/bin/{tsc,ts-node} $out/bin
+    cp -s ${node_modules}/bin/{tsc,ts-node,vite} $out/bin
   '';
 in
 {
   name = "meme";
   scripts = mapAttrs (_: exec: { inherit exec; }) {
-    start = ''
-      minikube start
-    '';
-    stop = ''
-      minikube stop
-    '';
+    start = "minikube start";
+    stop = "minikube stop";
+  };
+
+  enterShell = ''
+    mkdir -p node_modules
+    rm -f node_modules/*
+    ln -s ${node_modules}/node_modules/* node_modules
+  '';
+
+  processes = mapAttrs (_: exec: { inherit exec; }) {
+    frontend = "vite --port 4000 frontend";
+    backend = "ts-node backend/server.ts";
+    caddy = "caddy run";
   };
 
   env = {
@@ -32,15 +40,8 @@ in
     minikube
     kubectl
     nodejs
+    caddy
     xh
-    node_modules_bins
+    node_bin
   ];
-
-  enterShell = ''
-    ln -sf ${node_modules}/node_modules .
-  '';
-
-  processes.backend.exec = ''
-    ts-node ./backend/server.ts
-  '';
 }
