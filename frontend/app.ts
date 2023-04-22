@@ -3,7 +3,7 @@ async function main() {
   const text = await response.text()
   console.log(text)
   const root = document.getElementById('root')!
-  root.innerHTML = text
+  root.innerText = text
 }
 
 main()
