@@ -1,8 +1,8 @@
-{ pkgs, ... }@args:
+{ pkgs, inputs, ... }:
 let
   inherit (builtins) mapAttrs filterSource elem;
   inherit (pkgs) nodejs;
-  npmlock2nix = (import args.npmlock2nix { inherit pkgs; }).v2;
+  npmlock2nix = (import inputs.npmlock2nix { inherit pkgs; }).v2;
   src = pkgs.nix-gitignore.gitignoreSource [ ] ./.;
   node_modules = npmlock2nix.node_modules {
     inherit nodejs;
@@ -12,6 +12,7 @@ let
     mkdir -p $out/bin
     cp -s ${node_modules}/bin/{tsc,ts-node,vite} $out/bin
   '';
+  cobi-nix = import inputs.cobi-nix { inherit (inputs) nixpkgs; };
 in
 {
   name = "meme";
@@ -39,9 +40,8 @@ in
   packages = with pkgs; [
     minikube
     kubectl
-    nodejs
     caddy
-    xh
+    cobi-nix.hex
     node_bin
   ];
 }
